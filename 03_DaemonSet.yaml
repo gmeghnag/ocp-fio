@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ocp-fio-master
+  namespace: ocp-fio
+spec:
+  selector:
+    matchLabels:
+      app: ocp-fio-master
+      app: ocp-fio
+  template:
+    metadata:
+      labels:
+        app: ocp-fio-master
+        app: ocp-fio
+    spec:
+      serviceAccountName: default
+      volumes:
+      - hostPath:
+        path: /tmp
+        type: Directory
+        name: host
+      - name: fio-config-vol
+        configMap:
+          name: fio-job-config
+      hostPID: true
+      hostIPC: true
+      hostNetwork: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      tolerations:
+      - operator: Exists
+      containers:
+      - name: iostat
+        volumeMounts:
+        - mountPath: /host
+          name: host
+        - name: fio-config-vol
+          mountPath: /configs
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:40c7eac9c5d21bb9dab4ef3bffa447c48184d28b74525e118147e29f96d32d8e
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do fio /configs/fio.job --eta=never --directory=/host/; done"]
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2"
+            memory: "2Gi"
