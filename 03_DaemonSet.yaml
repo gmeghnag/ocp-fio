@@ -7,12 +7,10 @@ spec:
   selector:
     matchLabels:
       app: ocp-fio-master
-      app: ocp-fio
   template:
     metadata:
       labels:
         app: ocp-fio-master
-        app: ocp-fio
     spec:
       serviceAccountName: default
       volumes:
