@@ -35,13 +35,13 @@ spec:
           name: host
         - name: fio-config-vol
           mountPath: /configs
-        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:40c7eac9c5d21bb9dab4ef3bffa447c48184d28b74525e118147e29f96d32d8e
+        image: quay.io/cloud-bulldozer/etcd-perf
         imagePullPolicy: Always
         securityContext:
           privileged: true
           runAsUser: 0
         command: ["/bin/sh"]
-        args: ["-c", "while true; do fio /configs/fio.job --eta=never --directory=/host/; done"]
+        args: ["-c", "while true; do fio --rw=write --ioengine=sync --fdatasync=1 --directory=/var/lib/etcd --size=100m --bs=8000 --name=etcd_perf --output-format=json --runtime=60 --time_based=1; done"]
         resources:
           requests:
             cpu: "500m"
