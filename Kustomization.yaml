@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
 - 00_Namespace.yaml
 - 01_ClusterRoleBinding.yaml
-- 02_ConfigMap.yaml
-- 03_DaemonSet.yaml
+- 02_DaemonSet.yaml
